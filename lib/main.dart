@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterbenchmark/animation_page.dart';
 import 'package:flutterbenchmark/complex_layout_page.dart';
 import 'package:flutterbenchmark/list_page.dart';
 
@@ -37,10 +38,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void printFunc() {
-    print('Hello');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,16 +49,24 @@ class _MyHomePageState extends State<MyHomePage> {
           ListTile(
             title: Text('Complex Layout'),
             onTap: () {
-//              Function.apply(printFunc, null);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ComplexLayoutPage()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ComplexLayoutPage()));
             },
           ),
           ListTile(
-              title: Text('List'),
-              onTap: () {
-//              Function.apply(printFunc, null);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => ListPage()));
-              }),
+            title: Text('List'),
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => ListPage()));
+            },
+          ),
+          ListTile(
+            title: Text('Animation'),
+            onTap: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => AnimationPage()));
+            },
+          ),
         ]).toList(),
       ),
     );

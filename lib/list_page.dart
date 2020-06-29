@@ -1,24 +1,129 @@
 import 'package:flutter/material.dart';
 
-class ListPage extends StatelessWidget {
+class ListPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _ListPageState();
+}
+
+class _Action {
+  String title;
+  VoidCallback action;
+  _Action(this.title, this.action);
+}
+
+class _ListPageState extends State<ListPage> {
+  int itemCount = 0;
+  static int Action4Count = 0;
+
+  ScrollController _scrollController;
+
+//  final List<String> actions = ['创建100', '滚动到中间', '滚动到顶', '添加 1', '添加 100', '删除 100', '更新 1', '更新 100'];
+  List<_Action> actions = [];
+  List<_Item> items = [];
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = new ScrollController();
+    _Action action_1 = _Action('创建100', () {
+      itemCount = 100;
+      List<_Item> temp = [];
+      for (int i = 0; i < itemCount; i++) {
+        items.add(_Item('AIR Restaurant - $i'));
+      }
+      setState(() {});
+    });
+    _Action action_2 = _Action('滚动到中间', () {
+      double middle = itemCount / 2;
+      _scrollController.animateTo(middle * 127, duration: new Duration(seconds: 1), curve: Curves.ease);
+    });
+    _Action action_3 = _Action('滚动到顶', () {
+      _scrollController.animateTo(0.0, duration: new Duration(seconds: 1), curve: Curves.ease);
+    });
+    _Action action_4 = _Action('添加 1', () {
+      items.insert(0, _Item('AIR Restaurant - ${Action4Count}.1'));
+      itemCount++;
+      setState(() {});
+    });
+    _Action action_5 = _Action('添加 100', () {
+      int currentCount = items.length + 1;
+      for (int i = 0; i < 100; i++) {
+        items.add(_Item('AIR Restaurant - ${currentCount + i}'));
+      }
+      itemCount += 100;
+      setState(() {});
+    });
+    _Action action_6 = _Action('删除 100', () {
+      if (itemCount >= 100) {
+        items.removeRange(0, 99);
+      }
+      itemCount -= 100;
+      setState(() {});
+    });
+    _Action action_7 = _Action('更新 1', () {
+      _Item first = items[0];
+      first.title = 'Updated Title';
+      items.removeAt(0);
+      items.insert(0, first);
+      setState(() {});
+    });
+    _Action action_8 = _Action('更新 100', () {
+      if (itemCount < 100) return;
+      _Item first = items[99];
+      first.title = 'Updated Title';
+      items.removeAt(99);
+      items.insert(99, first);
+      setState(() {});
+    });
+    actions = [action_1, action_2, action_3, action_4, action_5, action_6, action_7, action_8];
+  }
+
+  void tap(_Action action) {
+    action.action();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('List Page'),
       ),
-      body: ListView.separated(
-        itemBuilder: (context, index) => createListCell(),
-        itemCount: 100,
-        separatorBuilder: (context, index) => Divider(
-          height: 1.0,
-          color: Colors.grey,
-        ),
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Wrap(
+              runSpacing: 4,
+              spacing: 2,
+              children: <Widget>[
+                for (var action in actions)
+                  Container(
+                    child: GestureDetector(
+                      onTap: () => tap(action),
+                      child: Text(action.title),
+                    ),
+                    decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+                  )
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.separated(
+              controller: _scrollController,
+              itemCount: itemCount,
+              cacheExtent: 127,
+              itemBuilder: (context, index) => createListCell(items[index].title),
+              separatorBuilder: (context, index) => Divider(
+                height: 1.0,
+                color: Colors.grey,
+              ),
+            ),
+          )
+        ],
       ),
     );
   }
 
-  Widget createListCell() {
+  Widget createListCell(String title) {
     List<String> tags = ["距离近", "味道赞", "回头客超多", "回头客超多", "回头客超多", "回头客超多"];
     TextStyle style = TextStyle(fontSize: 15, height: 1.2);
     TextStyle titleStyle = style.copyWith(fontSize: 17, color: Colors.black, fontWeight: FontWeight.w600);
@@ -51,9 +156,12 @@ class ListPage extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          "AIR Restaurant",
-                          style: titleStyle,
+                        Expanded(
+                          child: Text(
+                            title,
+                            maxLines: 1,
+                            style: titleStyle,
+                          ),
                         ),
                         Text("3.3km", style: descStyle)
                       ],
@@ -115,4 +223,11 @@ class ListPage extends StatelessWidget {
       ),
     );
   }
+}
+
+class _Item {
+  String title;
+  _Item(this.title);
+//  String desc;
+  //...
 }
